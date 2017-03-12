@@ -1,0 +1,14 @@
+[B]Version 0.0.4 - 2017-03-12[/B]
+add zoom via remote
+
+[B]Version 0.0.3 - 2017-03-12[/B]
+add zoom
+add reload for thumbs
+fixed overwrite of links.txt
+
+[B]Version 0.0.2 - 2017-03-10[/B]
+not released
+
+[B]Version 0.0.1 - 2017-03-05[/B]
+initial version
+
