@@ -1,4 +1,4 @@
-import xbmc, xbmcgui, xbmcaddon, os, platform, json, zipfile, urllib
+import xbmc, xbmcgui, xbmcaddon, os, platform, json, zipfile, urllib, re
 import subprocess
 import time
 
@@ -26,6 +26,8 @@ ACTION_SHOW_GUI = 18
 
 ACTION_SHOW_PLAYLIST = 33
 ACTION_SHOW_FULLSCREEN = 36
+
+ACTION_PLAYER_PLAY = 79
 
 ACTION_NAV_BACK = 92
 ACTION_CONTEXT_MENU = 117
@@ -105,6 +107,11 @@ class MyClass(xbmcgui.Window):
     self.addControl(self.strZoom) 
     self.strZoom.setLabel('100%')
     
+    # play symbol
+    self.play = xbmcgui.ControlImage(1400, 5, 130, 60, filename = 'OSDPlay.png', aspectRatio = 0)
+    self.addControl(self.play)
+    self.play.setVisible(False)
+    
     # get favorites
     self.LINKS = [self.ADDON.getSetting('fav01'),self.ADDON.getSetting('fav02'),
         self.ADDON.getSetting('fav03'),self.ADDON.getSetting('fav04'),
@@ -147,6 +154,27 @@ class MyClass(xbmcgui.Window):
     # ------------ nav. back ------------
     if action == ACTION_NAV_BACK:
       self.close()
+      
+    # ------------ play ------------
+    if action == ACTION_PLAYER_PLAY:
+    
+      save = os.path.join(self.CACHE, 'web','video.txt') 
+             
+      if(os.path.exists(save)): 
+          size = os.path.getsize(save)
+          if (size != 0):
+              data = ''
+	      
+	      with open(save, 'r') as infile:
+	          data = infile.read()
+	                
+              my_list = data.splitlines()
+              if (len(my_list) != 0):
+                  dialog = xbmcgui.Dialog()
+                  value = dialog.select('Select video', my_list )
+                  
+                  if(value >= 0):
+                      xbmc.Player().play(my_list[value])
     
     # ------------ stop ------------
     if action == ACTION_STOP:
@@ -284,6 +312,9 @@ class MyClass(xbmcgui.Window):
   # ------------ load a page ------------
   def loadPage(self, URL):
 
+    # disable play symbol
+    self.play.setVisible(False)
+
     # shoy busy circle
     xbmc.executebuiltin("ActivateWindow(busydialog)") 
     
@@ -321,6 +352,8 @@ class MyClass(xbmcgui.Window):
             subprocess.call(['.' + self.PHANTOMJS, self.FPATH +"/load.js", URL, self.WEB + "/" , str(zoom)])
     except Exception as e:
         xbmc.log('BROWSER ' + str(e))
+        
+    self.checkVideo()
     
     # finished
     xbmc.executebuiltin("Dialog.Close(busydialog)") 
@@ -337,6 +370,13 @@ class MyClass(xbmcgui.Window):
       else:
           self.image.setImage(os.path.join(self.FPATH,'background_error.png'), False)
           xbmc.executebuiltin('Notification(Load page error,could not load, 3000)') 
+      
+      save = os.path.join(self.CACHE, 'web','video.txt') 
+                   
+      if(os.path.exists(save)): 
+          size = os.path.getsize(save)
+          if (size != 0):
+              self.play.setVisible(True)
   
   # ------------ try to find link ID ------------
   def loadLinkNo(self, LinkNo):
@@ -414,6 +454,27 @@ class MyClass(xbmcgui.Window):
       
       f1.close()
       f2.close()
+      
+  # ------------ check for video links ------------
+  def checkVideo(self):
+        
+      file = os.path.join(self.CACHE, 'web','page.html') 
+      save = os.path.join(self.CACHE, 'web','video.txt') 
+       
+      if(os.path.exists(file)): 
+          f1 = open(file,'r')  
+          html = f1.read()
+          f1.close()
+      
+          f2 = open(save,'w')
+      
+          pattern = '(\'|\")http:([^(\'|\")]*)mp4([^(\'|\")]*)(\'|\")'
+          for m in re.finditer(pattern, html):
+              vid = m.group(0).replace('\'','').replace('\"','')
+              vid = vid.replace('\/','/')
+              f2.write(vid + '\n')
+              
+          f2.close()
   
   # ------------ get cache dir pictures ------------
   def getDir(self, path):

@@ -1,5 +1,8 @@
+[B]Version 0.0.5 - 2017-03-13[/B]
+add video extraction (mp4 only)
+
 [B]Version 0.0.4 - 2017-03-12[/B]
-add zoom via remote
+add zoom via remote 
 
 [B]Version 0.0.3 - 2017-03-12[/B]
 add zoom

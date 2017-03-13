@@ -14,7 +14,7 @@
             <setting id="fav06" type="text" label="Favorite 6" />
             <setting id="fav07" type="text" label="Favorite 7" />
             <setting id="fav08" type="text" label="Favorite 8" />
-            <setting id="fav09" type="text" label="Favorite 9" default="http://" />
+            <setting id="fav09" type="text" label="Favorite 9" />
     </category>   
     <category label="phantomjs">
         <setting label="Path" type="executable" id="file" value="phantojs.exe"/>
