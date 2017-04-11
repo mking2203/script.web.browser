@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+  <string id="30000">Browser</string>
+  <string id="30001">Bookmarks</string>
+  <string id="30002">phantomjs</string>
+  
+  <string id="30010">Homepage</string>
+  <string id="30011">Show bookmarks on startup</string>
+  <string id="30012">Zoom</string>
+  
+  <string id="30020">Reload bookmarks</string>
+  <string id="30021">Bookmark 1</string>
+  <string id="30022">Bookmark 2</string>
+  <string id="30023">Bookmark 3</string>
+  <string id="30024">Bookmark 4</string>
+  <string id="30025">Bookmark 5</string>
+  <string id="30026">Bookmark 6</string>
+  <string id="30027">Bookmark 7</string>
+  <string id="30028">Bookmark 8</string>
+  <string id="30029">Bookmark 9</string>
+  <string id="30030">Bookmark 10</string>
+ 
+  <string id="30040">Path to phantomjs</string>
+  
+  <string id="30100">Enter Link No.</string>
+  <string id="30101">Select video</string>
+  <string id="30102">Select</string>
+  <string id="30103">Enter URL</string>
+  
+  <string id="30110">Home</string> 
+  <string id="30111">Bookmarks</string>
+  <string id="30112">Back</string>
+  <string id="30113">Enter URL</string>
+  <string id="30114">Zoom +</string>
+  <string id="30115">Zoom -</string>
+  <string id="30116">Enter link no.</string>
+  <string id="30117">Play Video</string>
+  <string id="30118">no video available</string>
+   
+</strings>

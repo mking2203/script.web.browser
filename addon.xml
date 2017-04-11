@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.web.browser" name="Mouseless Web Browser" version="0.0.5" provider-name="M. King">
+<addon id="script.web.browser" name="Mouseless Web Browser" version="0.1.0" provider-name="M. King">
 	<requires>
 		<import addon="xbmc.python" version="2.7.0" />
+		<import addon="script.module.buggalo" version="1.1.6"/>
 	</requires>
 	<extension point="xbmc.python.script" library="main.py">
 		<provides>executable</provides>
@@ -13,6 +14,9 @@
 		<description lang="en">
 			This is a mouseless web browser using phantomjs and injection to display web sites. Using the remote you can browse the webpages.
 		</description>
+		<description lang="de">
+			Dies ist ein Web Browser, der ohne Maus bedient werden kann. Mit phantomjs und Java Injection werden die Seiten als Bild angezeigt. Über die Fernbedienung kann eine Seite per Nummer angewählt werden.
+		</description>		
 		<license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
 		<forum>http://</forum>
 		<source>http://</source>

@@ -1,22 +1,22 @@
 <settings>
-    <category label="Browser">
-        <setting id="home" type="text" label="Homepage" />
-        <setting id="show" type="bool" label="Show favorites" default="false"/>
-        <setting id="zoom" type="slider" label="Zoom" default="1.0" range="0.8,1.5" option="float" />
+    <category label="30000">
+        <setting id="home" type="text" label="30010" />
+        <setting id="show" type="bool" label="30011" default="false"/>
+        <setting id="zoom" type="slider" label="30012" default="1.0" range="0.8,1.5" option="float" />
     </category>   
-    <category label="Favorites">
-            <setting id="reload" type="bool" label="Reload favorites" default="false"/>
-            <setting id="fav01" type="text" label="Favorite 1" />
-            <setting id="fav02" type="text" label="Favorite 2" />
-            <setting id="fav03" type="text" label="Favorite 3" />
-            <setting id="fav04" type="text" label="Favorite 4" />
-            <setting id="fav05" type="text" label="Favorite 5" />
-            <setting id="fav06" type="text" label="Favorite 6" />
-            <setting id="fav07" type="text" label="Favorite 7" />
-            <setting id="fav08" type="text" label="Favorite 8" />
-            <setting id="fav09" type="text" label="Favorite 9" />
+    <category label="30001">
+            <setting id="reload" type="bool" label="30020" default="false"/>
+            <setting id="fav01" type="text" label="30021" />
+            <setting id="fav02" type="text" label="30022" />
+            <setting id="fav03" type="text" label="30023" />
+            <setting id="fav04" type="text" label="30024" />
+            <setting id="fav05" type="text" label="30025" />
+            <setting id="fav06" type="text" label="30026" />
+            <setting id="fav07" type="text" label="30027" />
+            <setting id="fav08" type="text" label="30028" />
+            <setting id="fav09" type="text" label="30029" />
     </category>   
-    <category label="phantomjs">
-        <setting label="Path" type="executable" id="file" value="phantojs.exe"/>
+    <category label="30002">
+        <setting label="30040" type="executable" id="file" value="phantojs.exe"/>
     </category>
 </settings>

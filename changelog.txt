@@ -1,3 +1,9 @@
+[B]Version 0.1.0 - 2017-04-11[/B]
+code cleanup
+context menu for simple remotes
+language support
+add buggalo (send report seems to be broken)
+
 [B]Version 0.0.5 - 2017-03-13[/B]
 add video extraction (mp4 only)
 
