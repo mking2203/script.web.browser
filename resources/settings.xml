@@ -1,6 +1,6 @@
 <settings>
     <category label="30000">
-        <setting id="home" type="text" label="30010" />
+        <setting id="home" type="text" label="30010" default="https://www.kodinerds.net" />
         <setting id="show" type="bool" label="30011" default="false"/>
         <setting id="zoom" type="slider" label="30012" default="1.0" range="0.8,1.5" option="float" />
     </category>   

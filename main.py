@@ -1,7 +1,7 @@
 #  Mouseless Web bowser Script
 #
 #      Copyright (C) 2017 by M. Koenig
-#      KODI addon 
+#      KODI addon
 #
 #  This Program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 #  along with this Program; see the file LICENSE.txt.  If not, write to
 #  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 #  http://www.gnu.org/copyleft/gpl.html
-# 
+#
 
 import xbmc, xbmcgui, xbmcaddon, os, platform, json, zipfile, urllib, re
 import subprocess
@@ -85,13 +85,14 @@ class MyClass(xbmcgui.Window):
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.init'})
   def __init__(self):
 
-    self.setResolution(0)
+    # self.setResolution(0)
+    # seems to be depreceated
 
-    self.ADDON = xbmcaddon.Addon(id='script.web.browser')  
+    self.ADDON = xbmcaddon.Addon(id='script.web.browser')
     self.FPATH = xbmc.translatePath(self.ADDON.getAddonInfo('path')).decode("utf-8")
-    self.PHANTOMJS = xbmc.translatePath(self.ADDON.getSetting('file')).decode("utf-8") 
+    self.PHANTOMJS = xbmc.translatePath(self.ADDON.getSetting('file')).decode("utf-8")
 
-    self.CACHE = xbmc.translatePath("special://temp").decode("utf-8") 
+    self.CACHE = xbmc.translatePath("special://temp").decode("utf-8")
     self.WEB = os.path.join(self.CACHE, 'web')
     self.FAV = os.path.join(self.CACHE, 'fav')
 
@@ -103,40 +104,44 @@ class MyClass(xbmcgui.Window):
         os.makedirs(self.FAV)
 
     #reload thumbs
-    if (self.ADDON.getSetting('reload') == "true"):    
+    if (self.ADDON.getSetting('reload') == "true"):
         self.deleteFavorites()
         self.ADDON.setSetting('reload', 'false')
 
     # load picture to avoid caching
     BACKG = os.path.join(self.FPATH,'background.png')
-    self.image = xbmcgui.ControlImage(0, 70, 1920, 1080,filename = BACKG)
+
+    xSize = 1280
+    ySize = 720
+
+    self.image = xbmcgui.ControlImage(0, 70, xSize, ySize,filename = BACKG)
     self.addControl(self.image)
 
     # top bar
-    BACKTOP = os.path.join(self.FPATH, 'webviewer-title-background.png') 
-    self.backTop = xbmcgui.ControlImage(0, 0, 1920, 70, BACKTOP)
+    BACKTOP = os.path.join(self.FPATH, 'webviewer-title-background.png')
+    self.backTop = xbmcgui.ControlImage(0, 0, xSize, 70, BACKTOP)
     self.addControl(self.backTop)
 
     # link
-    self.strLink = xbmcgui.ControlLabel(100, 16, 1200, 70, '', 'font14', '0xFF000000')
+    self.strLink = xbmcgui.ControlLabel(10, 16, 900, 70, '', 'font14', '0xFF000000')
     self.addControl(self.strLink)
     self.strLink.setLabel('about:blank')
 
     # id
-    self.strID = xbmcgui.ControlLabel(1600, 16, 1700, 70, '', 'font16', '0xFF000000')
-    self.addControl(self.strID) 
+    self.strID = xbmcgui.ControlLabel(1000, 16, 80, 70, '', 'font16', '0xFF000000')
+    self.addControl(self.strID)
     self.strID.setLabel('')
     self.select = ''
 
     # zoom
-    self.strZoom = xbmcgui.ControlLabel(1750, 16, 1850, 70, '', 'font16', '0xFF000000')
-    self.addControl(self.strZoom) 
+    self.strZoom = xbmcgui.ControlLabel(1100, 16, 80, 70, '', 'font16', '0xFF000000')
+    self.addControl(self.strZoom)
     self.strZoom.setLabel('100%')
 
     # play symbol
-    self.play = xbmcgui.ControlImage(1400, 5, 130, 60, filename = 'OSDPlay.png', aspectRatio = 0)
+    self.play = xbmcgui.ControlImage(1200, 5, 80, 60, filename = 'OSDPlay.png', aspectRatio = 0)
     self.addControl(self.play)
-    self.play.setVisible(False)
+    self.play.setVisible(True)
 
     # get favorites
     self.LINKS = [self.ADDON.getSetting('fav01'),self.ADDON.getSetting('fav02'),
@@ -153,10 +158,11 @@ class MyClass(xbmcgui.Window):
     self.makeHTML()
 
     # load homepage
-    if (self.ADDON.getSetting('show') == "true"):  
+    if (self.ADDON.getSetting('show') == "true"):
         homepage = "file:///" + self.FPATH + '/home.html'
     else:
-        homepage = self.ADDON.getSetting('home')  
+        homepage = self.ADDON.getSetting('home')
+        xbmc.executebuiltin('Notification(Load Homepage,' + homepage + ', 5000)')
 
     #get zoom
     self.ZOOM = float(self.ADDON.getSetting('zoom'))
@@ -195,7 +201,7 @@ class MyClass(xbmcgui.Window):
     if action == ACTION_PREV_ITEM:
         self.browserBack()
 
-    # ------------ next item ------------        
+    # ------------ next item ------------
     if action == ACTION_NEXT_ITEM:
         self.enterLink()
 
@@ -284,9 +290,9 @@ class MyClass(xbmcgui.Window):
       if self.page > 0:
 
         t = self.page - 1
-        BACKG = os.path.join(self.CACHE, 'web',f[t]) 
+        BACKG = os.path.join(self.CACHE, 'web',f[t])
 
-      	if(os.path.exists(BACKG)):     
+      	if(os.path.exists(BACKG)):
           self.page = self.page - 1
       	  self.image.setImage(BACKG, False)
 
@@ -301,10 +307,10 @@ class MyClass(xbmcgui.Window):
       if act < (cnt-1):
 
           t = self.page + 1
-          BACKG = os.path.join(self.CACHE, 'web',f[t]) 
+          BACKG = os.path.join(self.CACHE, 'web',f[t])
 
-          if(os.path.exists(BACKG)):  
-            self.page = self.page + 1  	
+          if(os.path.exists(BACKG)):
+            self.page = self.page + 1
             self.image.setImage(BACKG, False)
 
     # ------------ page up ------------
@@ -324,7 +330,7 @@ class MyClass(xbmcgui.Window):
       if (self.ZOOM <= 1.45):
           self.ZOOM = self.ZOOM + 0.1
 
-          self.loadPage(self.actual)   
+          self.loadPage(self.actual)
           self.showPage()
 
   # ------------ zoom minus ------------
@@ -341,20 +347,20 @@ class MyClass(xbmcgui.Window):
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.enterLink'})
   def enterLink(self):
 
-      keyboard = xbmc.Keyboard('http://', self.ADDON.getLocalizedString(30103))
+      keyboard = xbmc.Keyboard('https://', self.ADDON.getLocalizedString(30103))
       keyboard.doModal()
       if (keyboard.isConfirmed()):
 
           self.HISTORY.append(keyboard.getText())
 
-          self.loadPage(keyboard.getText())   
+          self.loadPage(keyboard.getText())
           self.showPage()
 
   # ------------ browser back ------------
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.browserBack'})
   def browserBack(self):
 
-      cnt = len(self.HISTORY)       
+      cnt = len(self.HISTORY)
       if(cnt > 1):
 
           link = self.HISTORY.pop()
@@ -367,7 +373,7 @@ class MyClass(xbmcgui.Window):
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.loadHomepage'})
   def loadHomepage(self):
 
-      homepage = self.ADDON.getSetting('home')	    
+      homepage = self.ADDON.getSetting('home')
 
       self.HISTORY.append(homepage)
 
@@ -392,7 +398,7 @@ class MyClass(xbmcgui.Window):
       dialog = xbmcgui.Dialog()
       value = dialog.numeric( 0, self.ADDON.getLocalizedString(30100), "" )
 
-      if(value <> ''):    
+      if(value <> ''):
           intValue = int(value)
           if (intValue <> 0):
               self.loadLinkNo(intValue)
@@ -401,9 +407,9 @@ class MyClass(xbmcgui.Window):
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.playVideo'})
   def playVideo(self):
 
-      save = os.path.join(self.CACHE, 'web','video.txt') 
+      save = os.path.join(self.CACHE, 'web','video.txt')
 
-      if(os.path.exists(save)): 
+      if(os.path.exists(save)):
           size = os.path.getsize(save)
           if (size != 0):
               data = ''
@@ -421,7 +427,7 @@ class MyClass(xbmcgui.Window):
 
           else:
               msg = self.ADDON.getLocalizedString(30118)
-              xbmc.executebuiltin('Notification(Web Browser, ' + msg + ', 1000)') 
+              xbmc.executebuiltin('Notification(Web Browser, ' + msg + ', 1000)')
 
   # ------------ load a page ------------
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.loadPage'})
@@ -431,7 +437,8 @@ class MyClass(xbmcgui.Window):
     self.play.setVisible(False)
 
     # shoy busy circle
-    xbmc.executebuiltin("ActivateWindow(busydialog)") 
+    # xbmc.executebuiltin("ActivateWindow(busydialog)")
+    # should not be called by addon
 
     try:
         xbmc.log('BROWSER load page ' + URL)
@@ -444,11 +451,11 @@ class MyClass(xbmcgui.Window):
 
         self.page = 0
         self.select = ''
-        self.actual = URL 
+        self.actual = URL
 
         self.image.setImage(os.path.join(self.FPATH,'background_load.png'), False)
 
-        zoom = self.ZOOM   	
+        zoom = self.ZOOM
         if(URL.startswith('file')):
             zoom = 1.0
 
@@ -471,7 +478,8 @@ class MyClass(xbmcgui.Window):
     self.checkVideo()
 
     # finished
-    xbmc.executebuiltin("Dialog.Close(busydialog)") 
+    # xbmc.executebuiltin("Dialog.Close(busydialog)")
+    # should not be called by addon
 
   # ------------ show a page ------------
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.showPage'})
@@ -481,15 +489,15 @@ class MyClass(xbmcgui.Window):
       cnt = int(len(f))
 
       if(cnt>0):
-          BACKG = os.path.join(self.CACHE, 'web',f[0]) 
-          self.image.setImage(BACKG, False)  
+          BACKG = os.path.join(self.CACHE, 'web',f[0])
+          self.image.setImage(BACKG, False)
       else:
           self.image.setImage(os.path.join(self.FPATH,'background_error.png'), False)
-          xbmc.executebuiltin('Notification(Load page error,could not load, 3000)') 
+          xbmc.executebuiltin('Notification(Load page error,could not load, 3000)')
 
-      save = os.path.join(self.CACHE, 'web','video.txt') 
+      save = os.path.join(self.CACHE, 'web','video.txt')
 
-      if(os.path.exists(save)): 
+      if(os.path.exists(save)):
           size = os.path.getsize(save)
           if (size != 0):
               self.play.setVisible(True)
@@ -519,7 +527,7 @@ class MyClass(xbmcgui.Window):
               n1 = line.index('[_')
               no = line[:n1-1]
 
-              if(not no.startswith('http')):                 
+              if(not no.startswith('http')):
                   no = urljoin(self.actual, no)
 
               self.HISTORY.append(no)
@@ -537,7 +545,7 @@ class MyClass(xbmcgui.Window):
 
       if not os.path.exists(thumb):
 
-          xbmc.executebuiltin('Notification(Cache thumbs,' + File +  ', 3000)') 
+          xbmc.executebuiltin('Notification(Cache thumbs,' + File +  ', 3000)')
 
           if(platform.system().startswith("Win")):
 
@@ -561,7 +569,7 @@ class MyClass(xbmcgui.Window):
       html = f1.read()
 
       for i in xrange(0, 9):
-          html = html.replace('http://www.link' + str(i+1) + '.com',self.ADDON.getSetting('fav0' + str(i+1))) 
+          html = html.replace('http://www.link' + str(i+1) + '.com',self.ADDON.getSetting('fav0' + str(i+1)))
 
       for i in xrange(0, 9):
           if(self.LINKS[i] != ''):
@@ -578,24 +586,24 @@ class MyClass(xbmcgui.Window):
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.checkVideo'})
   def checkVideo(self):
 
-      file = os.path.join(self.CACHE, 'web','page.html') 
-      save = os.path.join(self.CACHE, 'web','video.txt') 
+      file = os.path.join(self.CACHE, 'web','page.html')
+      save = os.path.join(self.CACHE, 'web','video.txt')
 
-      if(os.path.exists(file)): 
-          f1 = open(file,'r')  
+      if(os.path.exists(file)):
+          f1 = open(file,'r')
           html = f1.read()
           f1.close()
 
           f2 = open(save,'w')
 
-          pattern = '(\'|\")http:([^(\'|\")]*)mp4([^(\'|\")]*)(\'|\")'
+          pattern = '(\'|\")https:([^(\'|\")]*)mp4([^(\'|\")]*)(\'|\")'
           for m in re.finditer(pattern, html):
               vid = m.group(0).replace('\'','').replace('\"','')
               vid = vid.replace('\/','/')
               f2.write(vid + '\n')
 
           f2.close()
-  
+
   # ------------ get cache dir pictures ------------
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.getDir'})
   def getDir(self, path):
@@ -646,7 +654,7 @@ class MyClass(xbmcgui.Window):
           offset = iCur16x9 - i16x9
       self.setCoordinateResolution(skinnedResolution + offset)
 
-# ---------------- main call ---------------- 
+# ---------------- main call ----------------
 mydisplay = MyClass()
 mydisplay .doModal()
 del mydisplay
