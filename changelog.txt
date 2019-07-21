@@ -1,3 +1,9 @@
+[B]Version 0.1.2 - 2019-07-21[/B]
+fix play function for MP4s
+
+[B]Version 0.1.1 - 2019-07-20[/B]
+fixes for KODI 18
+
 [B]Version 0.1.0 - 2017-04-11[/B]
 code cleanup
 context menu for simple remotes

@@ -139,9 +139,9 @@ class MyClass(xbmcgui.Window):
     self.strZoom.setLabel('100%')
 
     # play symbol
-    self.play = xbmcgui.ControlImage(1200, 5, 80, 60, filename = 'OSDPlay.png', aspectRatio = 0)
+    self.play = xbmcgui.ControlImage(1200, 10, 50, 50, filename = os.path.join(self.FPATH,'OSDPlay.png'), aspectRatio = 0)
     self.addControl(self.play)
-    self.play.setVisible(True)
+    self.play.setVisible(False)
 
     # get favorites
     self.LINKS = [self.ADDON.getSetting('fav01'),self.ADDON.getSetting('fav02'),
