@@ -19,17 +19,20 @@
 #  http://www.gnu.org/copyleft/gpl.html
 #
 
-import xbmc, xbmcgui, xbmcaddon, os, platform, json, zipfile, urllib, re
+import xbmc, xbmcgui, xbmcaddon, xbmcvfs
+import os
+import platform
+import re
 import subprocess
 import time
 
 import buggalo
 buggalo.GMAIL_RECIPIENT = 'mark.der.koenig@gmail.com'
 
-from urlparse import urljoin
+from urllib.parse import urljoin
 from shutil import copyfile
 
-#get actioncodes from https://github.com/xbmc/xbmc/blob/master/xbmc/guilib/Key.h
+#get actioncodes from https://github.com/xbmc/xbmc/blob/master/xbmc/input/actions/ActionIDs.h
 ACTION_PREVIOUS_MENU = 10
 ACTION_SELECT_ITEM = 7
 
@@ -89,10 +92,10 @@ class MyClass(xbmcgui.Window):
     # seems to be depreceated
 
     self.ADDON = xbmcaddon.Addon(id='script.web.browser')
-    self.FPATH = xbmc.translatePath(self.ADDON.getAddonInfo('path')).decode("utf-8")
-    self.PHANTOMJS = xbmc.translatePath(self.ADDON.getSetting('file')).decode("utf-8")
+    self.FPATH = xbmcvfs.translatePath(self.ADDON.getAddonInfo('path'))
+    self.PHANTOMJS = xbmcvfs.translatePath(self.ADDON.getSetting('file'))
 
-    self.CACHE = xbmc.translatePath("special://temp").decode("utf-8")
+    self.CACHE = xbmcvfs.translatePath('special://temp')
     self.WEB = os.path.join(self.CACHE, 'web')
     self.FAV = os.path.join(self.CACHE, 'fav')
 
@@ -104,7 +107,7 @@ class MyClass(xbmcgui.Window):
         os.makedirs(self.FAV)
 
     #reload thumbs
-    if (self.ADDON.getSetting('reload') == "true"):
+    if (self.ADDON.getSetting('reload') == 'true'):
         self.deleteFavorites()
         self.ADDON.setSetting('reload', 'false')
 
@@ -150,19 +153,19 @@ class MyClass(xbmcgui.Window):
         self.ADDON.getSetting('fav07'),self.ADDON.getSetting('fav08'),
         self.ADDON.getSetting('fav09')]
 
-    for i in xrange(0, 9):
+    for i in range(0, 9):
         if(self.LINKS[i] != ''):
-            self.doCache(self.LINKS[i],"fav0" + str(i+1) + ".jpg")
+            self.doCache(self.LINKS[i], f'fav0{str(i+1)}.jpg')
 
     # make homepage
     self.makeHTML()
 
     # load homepage
     if (self.ADDON.getSetting('show') == "true"):
-        homepage = "file:///" + self.FPATH + '/home.html'
+        homepage = f'file:///{self.FPATH}/home.html'
     else:
         homepage = self.ADDON.getSetting('home')
-        xbmc.executebuiltin('Notification(Load Homepage,' + homepage + ', 5000)')
+        xbmc.executebuiltin(f'Notification(Load Homepage, {homepage}, 5000)')
 
     #get zoom
     self.ZOOM = float(self.ADDON.getSetting('zoom'))
@@ -172,7 +175,7 @@ class MyClass(xbmcgui.Window):
     self.HISTORY.append(homepage)
 
     # show homepage
-    self.loadPage(homepage);
+    self.loadPage(homepage)
     self.showPage()
 
   # ------------ on Action ------------
@@ -241,9 +244,9 @@ class MyClass(xbmcgui.Window):
     # ------------ select ------------
     if action == ACTION_SELECT_ITEM:
 
-        if(self.select <> ''):
+        if(self.select != ''):
             sel = int(self.select)
-            if(sel <> 0):
+            if(sel != 0):
                 self.loadLinkNo(sel)
         else:
             self.enterLinkNo()
@@ -292,9 +295,9 @@ class MyClass(xbmcgui.Window):
         t = self.page - 1
         BACKG = os.path.join(self.CACHE, 'web',f[t])
 
-      	if(os.path.exists(BACKG)):
+        if os.path.exists(BACKG):
           self.page = self.page - 1
-      	  self.image.setImage(BACKG, False)
+          self.image.setImage(BACKG, False)
 
     # ------------ move down ------------
     if action == ACTION_MOVE_DOWN:
@@ -377,18 +380,18 @@ class MyClass(xbmcgui.Window):
 
       self.HISTORY.append(homepage)
 
-      self.loadPage(homepage);
+      self.loadPage(homepage)
       self.showPage()
 
   # ------------ load favorite ------------
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.loadFavorite'})
   def loadFavorite(self):
 
-      homepage = "file:///" + self.FPATH + '/home.html'
+      homepage = f'file:///{self.FPATH}/home.html'
 
       self.HISTORY.append(homepage)
 
-      self.loadPage(homepage);
+      self.loadPage(homepage)
       self.showPage()
 
   # ------------ enter a link no. ------------
@@ -396,11 +399,11 @@ class MyClass(xbmcgui.Window):
   def enterLinkNo(self):
 
       dialog = xbmcgui.Dialog()
-      value = dialog.numeric( 0, self.ADDON.getLocalizedString(30100), "" )
+      value = dialog.numeric( 0, self.ADDON.getLocalizedString(30100), '' )
 
-      if(value <> ''):
+      if(value != ''):
           intValue = int(value)
-          if (intValue <> 0):
+          if (intValue != 0):
               self.loadLinkNo(intValue)
 
   # ------------ play a video ------------
@@ -427,7 +430,7 @@ class MyClass(xbmcgui.Window):
 
           else:
               msg = self.ADDON.getLocalizedString(30118)
-              xbmc.executebuiltin('Notification(Web Browser, ' + msg + ', 1000)')
+              xbmc.executebuiltin(f'Notification(Web Browser, {msg}, 1000)')
 
   # ------------ load a page ------------
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.loadPage'})
@@ -437,7 +440,7 @@ class MyClass(xbmcgui.Window):
     self.play.setVisible(False)
 
     # shoy busy circle
-    # xbmc.executebuiltin("ActivateWindow(busydialog)")
+    # xbmc.executebuiltin('ActivateWindow(busydialog)')
     # should not be called by addon
 
     try:
@@ -447,7 +450,7 @@ class MyClass(xbmcgui.Window):
 
         self.strLink.setLabel(URL)
         self.strID.setLabel('----')
-        self.strZoom.setLabel(str(int(self.ZOOM * 100)) + "%")
+        self.strZoom.setLabel(f'{str(int(self.ZOOM * 100))}%')
 
         self.page = 0
         self.select = ''
@@ -461,6 +464,8 @@ class MyClass(xbmcgui.Window):
 
         xbmc.log('BROWSER zoom ' + str(zoom))
 
+        cmd = [self.PHANTOMJS, '--ignore-ssl-errors=true', f'{self.FPATH}load.js', URL, f'{self.WEB}/' , str(zoom)]
+
         if(platform.system().startswith('Win')):
 
             # call phantomjs hidden for windows
@@ -469,11 +474,11 @@ class MyClass(xbmcgui.Window):
             info.dwFlags = subprocess.STARTF_USESHOWWINDOW
             info.wShowWindow = SW_HIDE
 
-            subprocess.call([self.PHANTOMJS, self.FPATH +"/load.js", URL, self.WEB + "/" , str(zoom)], startupinfo=info)
+            subprocess.run(cmd, startupinfo=info)
         else:
-            subprocess.call(['.' + self.PHANTOMJS, self.FPATH +"/load.js", URL, self.WEB + "/" , str(zoom)])
+            subprocess.run(cmd)
     except Exception as e:
-        xbmc.log('BROWSER ' + str(e))
+        xbmc.log(f'BROWSER {str(e)}')
 
     self.checkVideo()
 
@@ -492,10 +497,10 @@ class MyClass(xbmcgui.Window):
           BACKG = os.path.join(self.CACHE, 'web',f[0])
           self.image.setImage(BACKG, False)
       else:
-          self.image.setImage(os.path.join(self.FPATH,'background_error.png'), False)
-          xbmc.executebuiltin('Notification(Load page error,could not load, 3000)')
+          self.image.setImage(os.path.join(self.FPATH, 'background_error.png'), False)
+          xbmc.executebuiltin('Notification(Load page error, could not load, 3000)')
 
-      save = os.path.join(self.CACHE, 'web','video.txt')
+      save = os.path.join(self.CACHE, 'web', 'video.txt')
 
       if(os.path.exists(save)):
           size = os.path.getsize(save)
@@ -508,12 +513,12 @@ class MyClass(xbmcgui.Window):
 
       data = ''
 
-      with open(os.path.join(self.CACHE, 'web','links.txt'), 'r') as infile:
+      with open(os.path.join(self.CACHE, 'web', 'links.txt'), 'r') as infile:
           data = infile.read()
 
       my_list = data.splitlines()
 
-      no = '[_' + str(LinkNo) + '_]'
+      no = f'[_{str(LinkNo)}_]'
 
       self.select = ''
       self.strID.setLabel('')
@@ -522,7 +527,7 @@ class MyClass(xbmcgui.Window):
           if no in line:
 
               self.strLink.setLabel(line)
-              self.image.setImage(os.path.join(self.FPATH,'background_load.png'), False)
+              self.image.setImage(os.path.join(self.FPATH, 'background_load.png'), False)
 
               n1 = line.index('[_')
               no = line[:n1-1]
@@ -535,19 +540,21 @@ class MyClass(xbmcgui.Window):
               self.loadPage(no)
               self.showPage()
 
-              break;
+              break
 
   # ------------ cache page picture ------------
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.doCache'})
   def doCache(self, URL, File):
 
-      thumb = self.FAV + "/" + File
+      thumb = f'{self.FAV}/{File}'
 
       if not os.path.exists(thumb):
 
-          xbmc.executebuiltin('Notification(Cache thumbs,' + File +  ', 3000)')
+          xbmc.executebuiltin(f'Notification(Cache thumbs, {File}, 3000)')
 
-          if(platform.system().startswith("Win")):
+          cmd = [self.PHANTOMJS, '--ignore-ssl-errors=true', f'{self.FPATH}/thumb.js', URL, f'{self.FAV}/{File}']
+
+          if(platform.system().startswith('Win')):
 
               # call phantomjs hidden for windows
               SW_HIDE = 0
@@ -555,54 +562,47 @@ class MyClass(xbmcgui.Window):
               info.dwFlags = subprocess.STARTF_USESHOWWINDOW
               info.wShowWindow = SW_HIDE
 
-              subprocess.call([self.PHANTOMJS, self.FPATH +"/thumb.js", URL, self.FAV + "/" + File], startupinfo=info)
+              subprocess.run(cmd, startupinfo=info)
           else:
-              subprocess.call(['.' + self.PHANTOMJS, self.FPATH + "/thumb.js", URL, self.FAV + "/" + File])
+              subprocess.run(cmd)
 
   # ------------ generate home page ------------
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.makeHTML'})
   def makeHTML(self):
 
-      f1 = open(self.FPATH + '/template.html','r')
-      f2 = open(self.FPATH + '/home.html','w')
+      with open(f'{self.FPATH}/template.html', 'r') as f1:
+          with open(f'{self.FPATH}/home.html', 'w') as f2:
+            html = f1.read()
 
-      html = f1.read()
+            for i in range(0, 9):
+                html = html.replace(f'http://www.link{str(i+1)}.com', self.ADDON.getSetting(f'fav0{str(i+1)}'))
 
-      for i in xrange(0, 9):
-          html = html.replace('http://www.link' + str(i+1) + '.com',self.ADDON.getSetting('fav0' + str(i+1)))
+            for i in range(0, 9):
+                if(self.LINKS[i] != ''):
+                    html = html.replace(f'alt="fav0{str(i+1)}.jpg" src="template.png"', f'alt="fav0{str(i+1)}.jpg" src="file:///{self.FAV}\\fav0{str(i+1)}.jpg"')
+                else:
+                    html = html.replace(f'alt="fav0{str(i+1)}.jpg" src="template.png"', f'alt="fav0{str(i+1)}.jpg" src="file:///{self.FPATH}\\template.png"')
 
-      for i in xrange(0, 9):
-          if(self.LINKS[i] != ''):
-              html = html.replace('alt="fav0' + str(i+1) + '.jpg" src="template.png"','alt="fav0' + str(i+1) + '.jpg" src="file:///' + self.FAV + '\\fav0' + str(i+1) + '.jpg"')
-          else:
-              html = html.replace('alt="fav0' + str(i+1) + '.jpg" src="template.png"','alt="fav0' + str(i+1) + '.jpg" src="file:///' + self.FPATH + '\\template.png"')
-
-      f2.write(html)
-
-      f1.close()
-      f2.close()
+            f2.write(html)
 
   # ------------ check for video links ------------
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.checkVideo'})
   def checkVideo(self):
 
-      file = os.path.join(self.CACHE, 'web','page.html')
-      save = os.path.join(self.CACHE, 'web','video.txt')
+      file = os.path.join(self.CACHE, 'web', 'page.html')
+      save = os.path.join(self.CACHE, 'web', 'video.txt')
 
       if(os.path.exists(file)):
-          f1 = open(file,'r')
-          html = f1.read()
-          f1.close()
+          html = ''
+          with open(file, 'r', encoding='utf-8') as fp:
+            html = fp.read()
 
-          f2 = open(save,'w')
-
-          pattern = '(\'|\")https:([^(\'|\")]*)mp4([^(\'|\")]*)(\'|\")'
-          for m in re.finditer(pattern, html):
-              vid = m.group(0).replace('\'','').replace('\"','')
-              vid = vid.replace('\/','/')
-              f2.write(vid + '\n')
-
-          f2.close()
+          with open(save, 'w') as fp:
+            pattern = '(\'|\")https:([^(\'|\")]*)mp4([^(\'|\")]*)(\'|\")'
+            for m in re.finditer(pattern, html):
+                vid = m.group(0).replace('\'', '').replace('\"', '')
+                vid = vid.replace('\/', '/')
+                fp.write(f'{vid}\n')
 
   # ------------ get cache dir pictures ------------
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.getDir'})
@@ -621,7 +621,7 @@ class MyClass(xbmcgui.Window):
                 if os.path.isfile(fpath):
                     os.unlink(fpath)
             except Exception as e:
-                xbmc.log("BROWSER " + str(e))
+                xbmc.log(f'BROWSER {str(e)}')
 
   # ------------ delete the favorites ------------
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.deleteFavorites'})
@@ -633,7 +633,7 @@ class MyClass(xbmcgui.Window):
                 if os.path.isfile(fpath):
                     os.unlink(fpath)
             except Exception as e:
-                xbmc.log("BROWSER " + str(e))
+                xbmc.log(f'BROWSER {str(e)}')
 
   # ------------ set resolution ------------
   @buggalo.buggalo_try_except({'class' : 'MyClass', 'method': 'web.browser.setResolution'})
@@ -641,7 +641,7 @@ class MyClass(xbmcgui.Window):
       # get current resolution
       currentResolution = self.getResolution()
       offset = 0
-      # if current and skinned resolutions differ and skinned resolution is not
+      # if current and skinned resolutions differ and skinned resolution !=
       # 1080i or 720p (they have no 4:3) calculate widescreen offset
       if currentResolution != skinnedResolution and skinnedResolution > 1:
           # check if current resolution is 16x9
