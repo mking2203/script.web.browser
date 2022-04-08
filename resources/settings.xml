@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
     <category label="30000">
         <setting id="home" type="text" label="30010" default="https://www.kodinerds.net" />
